@@ -4,7 +4,7 @@ from bs4 import BeautifulSoup
 import openai
 
 # Retrieve OpenAI API key from Streamlit secrets
-openai_api_key = st.secrets["api_key"]
+openai_api_key = st.secrets["openai"]["api_key"]
 
 # Set up OpenAI API key
 openai.api_key = openai_api_key

@@ -27,30 +27,32 @@ def scrape_news(url):
         print(f"Error scraping {url}: {e}")
         return []
 
-# Function to analyze trends using ChatGPT-4 Mini
+# Function to analyze trends using gpt-3.5-turbo
 def analyze_trends(articles):
     combined_text = "\n".join([f"{a['headline']} - {a['summary']}" for a in articles])
     
-    prompt = f"""
-    Analyze the following news articles and identify emerging trends in world events, politics, business, and technology:
+    messages = [
+        {"role": "system", "content": "You are a helpful assistant."},
+        {"role": "user", "content": f"""
+        Analyze the following news articles and identify emerging trends in world events, politics, business, and technology:
+        
+        {combined_text}
+        
+        Based on these trends, suggest potential new business ideas or opportunities.
+        """},
+        {"role": "assistant", "content": ""}
+    ]
     
-    {combined_text}
-    
-    Based on these trends, suggest potential new business ideas or opportunities.
-    """
-    
-    response = openai.ChatCompletion.create(
-        model="gpt-4",
-        messages=[
-            {"role": "system", "content": "You are a helpful assistant."},
-            {"role": "user", "content": prompt},
-            {"role": "assistant", "content": ""}
-        ],
-        max_tokens=500,
-        temperature=0.7
-    )
-    
-    return response.choices[0].message['content']
+    try:
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=messages,
+            max_tokens=500,
+            temperature=0.7
+        )
+        return response.choices[0].message.content.strip()
+    except Exception as e:
+        return f"Error analyzing trends: {str(e)}"
 
 # Streamlit app
 st.title("News Trend Analyzer & Business Idea Generator")
